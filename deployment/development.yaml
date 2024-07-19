@@ -1,11 +1,29 @@
-webserver:
-  deployment:
-    image:
-      repository: ghcr.io/tradecrit/authentication
-      pullPolicy: Always
-      tag: "1.0.1"
-    env:
-      ENVIRONMENT: "development"
-      SUPERTOKENS_CONNECTION_URI: "http://authentication-supertokens:3567"
-      FRONTEND_URL: "http://localhost:3000"
-      API_DOMAIN: "https://auth.development.tradecrit.com"
+fullnameOverride: "plaid-integration"
+
+deployment:
+  image:
+    repository: ghcr.io/tradecrit/plaid-integration
+    pullPolicy: Always
+    tag: "1.0.1"
+  env:
+    ENVIRONMENT: "development"
+    PORT: "8080"
+    ADDRESS: "0.0.0.0"
+    FRONTEND_URL: "http://localhost:3000"
+    AUTH_API_REALM: "TradeCrit"
+    AUTH_API_URL: "https://auth.development.tradecrit.com"
+    PLAID_ENV: "sandbox"
+    PLAID_PRODUCTS: "investments"
+  annotations:
+    vault.hashicorp.com/agent-inject: 'true'
+    vault.hashicorp.com/role: 'plaid-integration'
+    vault.hashicorp.com/agent-inject-secret: 'secret/data/plaid-integration'
+    vault.hashicorp.com/agent-inject-template: |
+      {{ with secret "secret/data/plaid-integration/plaid-credentials" -}}
+        export PLAID_CLIENT_ID="{{ .Data.data.client_id }}"
+        export PLAID_SECRET="{{ .Data.data.client_secret }}"
+      {{- end }}
+      {{ with secret "secret/data/plaid-integration/auth-credentials" -}}
+        export AUTH_CLIENT_ID="{{ .Data.data.client_id }}"
+        export AUTH_CLIENT_SECRET="{{ .Data.data.client_secret }}"
+      {{- end }}

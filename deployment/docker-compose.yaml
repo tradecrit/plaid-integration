@@ -1,8 +1,8 @@
 services:
   webserver:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: ../Dockerfile
     networks:
       - app_network
     ports:

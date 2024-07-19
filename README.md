@@ -1,6 +1,12 @@
 # Plaid Link Backend Integration
 
+[![Continuous Integration Workflow](https://github.com/tradecrit/plaid-integration/actions/workflows/ci.yaml/badge.svg)](https://github.com/tradecrit/plaid-integration/actions/workflows/ci.yaml)
+
+[![Continuous Deployment Workflow](https://github.com/tradecrit/plaid-integration/actions/workflows/cd.yaml/badge.svg)](https://github.com/tradecrit/plaid-integration/actions/workflows/cd.yaml)
+
 Open source integration for Plaid Link, to show an example of how to create the backend integration for Plaid Link. This repository is a simple example of how to create a backend integration for Plaid Link using Node.js and Express.js along with Typescript. 
+
+The included pipelines involve a CI pipeline for the project, which runs the tests and lints the code. The CD pipeline is used to deploy the project for this organization and thus means this project is used in a production environment.
 
 # Getting Started
 
