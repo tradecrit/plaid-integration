@@ -1,0 +1,11 @@
+webserver:
+  deployment:
+    image:
+      repository: ghcr.io/tradecrit/authentication
+      pullPolicy: Always
+      tag: "1.0.1"
+    env:
+      ENVIRONMENT: "development"
+      SUPERTOKENS_CONNECTION_URI: "http://authentication-supertokens:3567"
+      FRONTEND_URL: "http://localhost:3000"
+      API_DOMAIN: "https://auth.development.tradecrit.com"

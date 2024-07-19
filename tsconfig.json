@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "types": [
+      "node",
+      "express"
+    ],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/types/*.d.ts",
+    "../../.cache/JetBrains/WebStorm2024.1/javascript/typings/node/20.13.0/node_modules/@types/node/globals.d.ts"
+  ]
+}

@@ -1,0 +1,14 @@
+services:
+  webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - app_network
+    ports:
+      - 8080:8080
+    environment: []
+
+networks:
+  app_network:
+    driver: bridge
