@@ -11,7 +11,7 @@ httpRoute:
     - name: "api-gateway"
       sectionName: "tls"
       namespace: "istio-gateway"
-  pathPrefix: "/plaid-integration"
+  pathPrefix: "/plaid"
   replacePrefixMatch: "/"
 
 
