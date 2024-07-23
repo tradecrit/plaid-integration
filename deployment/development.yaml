@@ -1,10 +1,29 @@
 fullnameOverride: "plaid-integration"
 
+httpRoute:
+  enabled: true
+  subdomain: "api"
+  environment: "development"
+  domain: "tradecrit.com"
+  referenceGrants:
+    - "plaid-integration"
+  parentRefs:
+    - name: "api-gateway"
+      sectionName: "tls"
+      namespace: "istio-gateway"
+  pathPrefix: "/plaid-integration"
+  replacePrefixMatch: "/"
+
+
 deployment:
   image:
     repository: ghcr.io/tradecrit/plaid-integration
     pullPolicy: Always
     tag: "1.0.1"
+  command:
+    [ 'sh', '-c' ]
+  args:
+    [ 'source /vault/secrets/envvars && npm start' ]
   env:
     ENVIRONMENT: "development"
     PORT: "8080"
@@ -16,14 +35,15 @@ deployment:
     PLAID_PRODUCTS: "investments"
   annotations:
     vault.hashicorp.com/agent-inject: 'true'
+    vault.hashicorp.com/agent-init-first: 'true'
     vault.hashicorp.com/role: 'plaid-integration'
-    vault.hashicorp.com/agent-inject-secret: 'secret/data/plaid-integration'
-    vault.hashicorp.com/agent-inject-template: |
-      {{ with secret "secret/data/plaid-integration/plaid-credentials" -}}
+    vault.hashicorp.com/agent-inject-secret-envvars: 'services/data/plaid-integration'
+    vault.hashicorp.com/agent-inject-template-envvars: |
+      {{ with secret "services/data/plaid-integration/plaid-credentials" }}
         export PLAID_CLIENT_ID="{{ .Data.data.client_id }}"
         export PLAID_SECRET="{{ .Data.data.client_secret }}"
-      {{- end }}
-      {{ with secret "secret/data/plaid-integration/auth-credentials" -}}
+      {{ end }}
+      {{ with secret "services/data/plaid-integration/auth-credentials" }}
         export AUTH_CLIENT_ID="{{ .Data.data.client_id }}"
         export AUTH_CLIENT_SECRET="{{ .Data.data.client_secret }}"
-      {{- end }}
+      {{ end }}

@@ -2,24 +2,26 @@ Notes for installation into Kubernetes
 
 Namespace creation with optional istio label for sidecar injection
 ```bash
-kubectl create namespace plaid-integration
-kubectl label namespace plaid-integration istio-injection=enabled
+kubectl create namespace plaid
+kubectl label namespace plaid istio-injection=enabled
+kubectl label namespace plaid private-registry-access=true
 ```
 
 ## Example for Vault setup
 
 ```bash
-export VAULT_TOKEN="mytoken"
+export VAULT_TOKEN="hvs.pUlhCfw0p0eQwuwhJJhLyob1"
 export VAULT_ADDR="https://vault.vault:8200"
 export VAULT_SKIP_VERIFY=TRUE
 export SERVICE="plaid-integration"
 export SERVICE_ACCOUNT="plaid-integration"
-export NAMESPACE="plaid-integration"
+export NAMESPACE="plaid"
 
 vault login $VAULT_TOKEN;
 ```
 
 At this point you should see some output similar to the following:
+
 ```text
 Success! You are now authenticated. The token information displayed below
 is already stored in the token helper. You do NOT need to run "vault login"
@@ -44,6 +46,9 @@ EOF
 
 vault policy write $SERVICE - <<EOF
 path "services/$SERVICE/*" {
+  capabilities = ["read"]
+}
+path "services/data/$SERVICE/*" {
   capabilities = ["read"]
 }
 EOF
@@ -74,7 +79,7 @@ client_secret=""
 
 helm upgrade --install \
 plaid-integration \
---namespace plaid-integration \
--f deployment/development
-../helm-charts/webserver
+--namespace plaid \
+-f deployment/development.yaml \
+../helm-charts/charts/webserver
 ```
