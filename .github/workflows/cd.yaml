@@ -20,7 +20,7 @@ env:
   IMAGE_REGISTRY: ${{ github.event.inputs.image_registry }}
   IMAGE_REPOSITORY: ${{ github.event.inputs.image_repository }}
   IMAGE_TAG: ${{ github.event.inputs.image_tag }}
-  CHART_URL: https://github.com/tradecrit/helm-charts/releases/tag/webserver-0.1.12.tgz
+  CHART_URL: https://github.com/tradecrit/helm-charts/releases/download/webserver-0.1.12/webserver-0.1.12.tgz
 
 # There is a single job in this workflow. It's configured to run on the latest available version of Ubuntu.
 jobs:
