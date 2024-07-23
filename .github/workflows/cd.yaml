@@ -10,6 +10,7 @@ on:
       image_repository:
         description: 'The repository of the image'
         required: true
+        default: "tradecrit/plaid-integration"
       image_tag:
         description: 'The tag of the image'
         required: true
@@ -67,9 +68,7 @@ jobs:
           echo "RELEASE_NAME=$(cat package.json | jq -r .name)" >> "$GITHUB_OUTPUT"
 
       - name: Deploy application
-        run: |
-          helm dependency update deployment/service
-          
+        run: |          
           echo "Deploying to ${{ env.ENVIRONMENT }} environment"
           echo "Release name: ${{ steps.get_release_name.outputs.RELEASE_NAME }}"
           echo "Image repository: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}"
