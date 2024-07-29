@@ -6,9 +6,6 @@ type AppConfig = {
     address: string;
     frontendUrl: string;
     authApiUrl: string;
-    authApiRealm: string;
-    authClientId: string;
-    authClientSecret: string;
     plaidClientId: string;
     plaidSecret: string;
     plaidEnv: string;
@@ -33,9 +30,6 @@ class Config {
     plaidEnv: string;
     plaidProducts: string[];
     authApiUrl: string;
-    authApiRealm: string;
-    authClientId: string;
-    authClientSecret: string;
 
     constructor() {
         const config: AppConfig = this.getConfig();
@@ -48,9 +42,6 @@ class Config {
         this.plaidEnv = config.plaidEnv;
         this.plaidProducts = config.plaidProducts;
         this.authApiUrl = config.authApiUrl;
-        this.authApiRealm = config.authApiRealm;
-        this.authClientId = config.authClientId;
-        this.authClientSecret = config.authClientSecret;
     }
 
     getConfig(): AppConfig {
@@ -84,9 +75,6 @@ class Config {
             plaidEnv: safeLoadEnvVar("PLAID_ENV"),
             plaidProducts: plaidProducts,
             authApiUrl: safeLoadEnvVar("AUTH_API_URL"),
-            authApiRealm: safeLoadEnvVar("AUTH_API_REALM"),
-            authClientId: safeLoadEnvVar("AUTH_CLIENT_ID"),
-            authClientSecret: safeLoadEnvVar("AUTH_CLIENT_SECRET"),
         };
     }
 }

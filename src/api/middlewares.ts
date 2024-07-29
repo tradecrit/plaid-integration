@@ -36,13 +36,10 @@ export const registerMiddlewares = (app: Express) => {
         try {
             const response: TokenData = await validateToken(
                 appConfig.authApiUrl,
-                appConfig.authApiRealm,
-                appConfig.authClientId,
-                appConfig.authClientSecret,
                 token
             );
 
-            logger.info(`Token validated for ${response.preferred_username}`);
+            logger.info(`Token validated for ${response.sub}`);
 
             req.body.tokenData = response;
 

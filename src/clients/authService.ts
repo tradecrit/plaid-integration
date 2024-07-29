@@ -1,24 +1,19 @@
+import JwksRsa, {JwksClient} from "jwks-rsa";
+import {decode, Jwt} from "jsonwebtoken";
+import {promisify} from "node:util";
+import * as jwt from 'jsonwebtoken';
+
 export interface TokenData {
-    exp: number
-    iat: number
-    auth_time: number
-    jti: string
-    iss: string
-    aud: string
-    sub: string
-    typ: string
-    azp: string
-    nonce: string
-    session_state: string
-    acr: string
-    "allowed-origins": string[]
-    realm_access: RealmAccess
-    resource_access: ResourceAccess
-    scope: string
-    sid: string
-    email_verified: boolean
-    preferred_username: string
-    email: string
+    "aud": string
+    "azp": string
+    "exp": number
+    "iat": number
+    "iss": string
+    "jti": string
+    "org_code": string
+    "permissions": string[]
+    "scp": string[]
+    "sub": string
 }
 
 export interface RealmAccess {
@@ -33,37 +28,49 @@ export interface Account {
     roles: string[]
 }
 
+function findSigningKey(keys: JwksRsa.SigningKey[], decodedToken: Jwt): JwksRsa.SigningKey {
+    const key = keys.find((key) => key.kid === decodedToken.header.kid);
+
+    if (!key) {
+        throw new Error('Signing key not found');
+    }
+
+    return key;
+}
 
 export async function validateToken(
     authApiUrl: string,
-    authApiRealm: string,
-    client_id: string,
-    client_secret: string,
     token: string
 ): Promise<TokenData> {
-    const fullUrl = `${authApiUrl}/realms/${authApiRealm}/protocol/openid-connect/token/introspect`;
+    const jwksUrl: string = `${authApiUrl}/.well-known/jwks`;
 
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/x-www-form-urlencoded');
+    const jwksClient: JwksClient = new JwksClient({
+        jwksUri: jwksUrl,
+    });
 
-    const urlencoded = new URLSearchParams();
-    urlencoded.append('token', token);
-    urlencoded.append('client_id', client_id);
-    urlencoded.append('client_secret', client_secret);
-    urlencoded.append('grant_types', 'client_credentials');
+    const signingKeys: JwksRsa.SigningKey[] = await jwksClient.getSigningKeys();
 
-    const requestOptions: RequestInit = {
-        method: "POST",
-        headers: headers,
-        body: urlencoded,
-        redirect: "follow"
-    };
+    const decodedToken: Jwt | null = decode(token, {complete: true});
 
-    const response: Response = await fetch(fullUrl, requestOptions);
-
-    if (response.status !== 200) {
-        throw new Error(`Failed to validate token: ${response.statusText}`);
-    } else {
-        return response.json();
+    if (!decodedToken) {
+        throw new Error('Invalid token');
     }
+
+    const signingKey: JwksRsa.SigningKey = findSigningKey(signingKeys, decodedToken);
+    const publicKey: string = signingKey.getPublicKey();
+
+    const result = jwt.verify(token, publicKey, {
+        algorithms: ['RS256'],
+        issuer: authApiUrl,
+    });
+
+    if (typeof result !== 'object') {
+        throw new Error('Invalid token');
+    }
+
+    if (!result || !result.sub) {
+        throw new Error('Invalid token');
+    }
+
+    return result as TokenData;
 }
