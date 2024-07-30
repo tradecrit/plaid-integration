@@ -80,3 +80,8 @@ jobs:
           --set webserver.deployment.image.tag=${{ env.IMAGE_TAG }} \
           --namespace ${{ env.NAMESPACE }} \
           ${{ env.CHART_URL }}
+
+      - name: Perform rolling update
+        run: |
+          kubectl rollout status deployment/${{ steps.get_release_name.outputs.RELEASE_NAME }} \
+          --namespace ${{ env.NAMESPACE }}
