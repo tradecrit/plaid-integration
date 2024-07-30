@@ -43,7 +43,3 @@ deployment:
         export PLAID_CLIENT_ID="{{ .Data.data.client_id }}"
         export PLAID_SECRET="{{ .Data.data.client_secret }}"
       {{ end }}
-      {{ with secret "services/data/plaid-integration/auth-credentials" }}
-        export AUTH_CLIENT_ID="{{ .Data.data.client_id }}"
-        export AUTH_CLIENT_SECRET="{{ .Data.data.client_secret }}"
-      {{ end }}
