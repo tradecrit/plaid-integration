@@ -83,5 +83,5 @@ jobs:
 
       - name: Perform rolling update
         run: |
-          kubectl rollout status deployment/${{ steps.get_release_name.outputs.RELEASE_NAME }} \
+          kubectl rollout restart deployment/${{ steps.get_release_name.outputs.RELEASE_NAME }} \
           --namespace ${{ env.NAMESPACE }}
