@@ -10,6 +10,7 @@ type AppConfig = {
     plaidSecret: string;
     plaidEnv: string;
     plaidProducts: string[];
+    logLevel: string;
 }
 
 function safeLoadEnvVar(name: string): string {
@@ -30,6 +31,7 @@ class Config {
     plaidEnv: string;
     plaidProducts: string[];
     authApiUrl: string;
+    logLevel: string = "debug";
 
     constructor() {
         const config: AppConfig = this.getConfig();
@@ -42,6 +44,7 @@ class Config {
         this.plaidEnv = config.plaidEnv;
         this.plaidProducts = config.plaidProducts;
         this.authApiUrl = config.authApiUrl;
+        this.logLevel = config.logLevel;
     }
 
     getConfig(): AppConfig {
@@ -66,6 +69,8 @@ class Config {
         const rawPlaidProducts: string = safeLoadEnvVar("PLAID_PRODUCTS");
         const plaidProducts = rawPlaidProducts.split(",").map((product) => product.trim());
 
+        const logLevel = envConfig.LOG_LEVEL || "debug";
+
         return {
             port: safeLoadEnvVar("PORT") ? port : 8080,
             address: safeLoadEnvVar("ADDRESS") ? address : "localhost",
@@ -75,6 +80,7 @@ class Config {
             plaidEnv: safeLoadEnvVar("PLAID_ENV"),
             plaidProducts: plaidProducts,
             authApiUrl: safeLoadEnvVar("AUTH_API_URL"),
+            logLevel: logLevel
         };
     }
 }

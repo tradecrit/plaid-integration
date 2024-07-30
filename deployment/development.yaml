@@ -33,6 +33,7 @@ deployment:
     AUTH_API_URL: "https://auth.development.tradecrit.com"
     PLAID_ENV: "sandbox"
     PLAID_PRODUCTS: "investments"
+    LOG_LEVEL: "debug"
   annotations:
     vault.hashicorp.com/agent-inject: 'true'
     vault.hashicorp.com/agent-init-first: 'true'

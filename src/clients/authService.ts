@@ -2,6 +2,7 @@ import {JwksClient} from "jwks-rsa";
 import {decode, Jwt} from "jsonwebtoken";
 import * as jwt from 'jsonwebtoken';
 import * as jwksRsa from 'jwks-rsa';
+import {logger} from "../config/logger";
 
 export interface TokenData {
     "aud": string
@@ -36,17 +37,23 @@ export async function validateToken(
         jwksUri: jwksUrl,
     });
 
+    logger.debug(`Fetching signing keys from ${jwksUrl}`);
     const signingKeys: jwksRsa.SigningKey[] = await jwksClient.getSigningKeys();
 
+    logger.debug(`Decoding user auth token`);
     const decodedToken: Jwt | null = decode(token, {complete: true});
 
     if (!decodedToken) {
         throw new Error('Invalid token');
     }
 
+    logger.debug(`Finding signing key matching user token inside JWKS key map`);
     const signingKey: jwksRsa.SigningKey = findSigningKey(signingKeys, decodedToken);
+
+    logger.debug("Retrieving public key from signing key");
     const publicKey: string = signingKey.getPublicKey();
 
+    logger.debug(`Verifying token with public key`);
     const result = jwt.verify(token, publicKey, {
         algorithms: ['RS256'],
         issuer: authApiUrl,
@@ -59,6 +66,8 @@ export async function validateToken(
     if (!result || !result.sub) {
         throw new Error('Invalid token');
     }
+
+    logger.info(`Token validated for ${result.sub}`);
 
     return result as TokenData;
 }

@@ -26,7 +26,7 @@ export const registerMiddlewares = (app: Express) => {
             return next();
         }
 
-        const authHeader = req.headers.authorization;
+        const authHeader = req.headers.authorization as string;
 
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return res.status(401).send('Unauthorized');
@@ -34,7 +34,11 @@ export const registerMiddlewares = (app: Express) => {
 
         const token = authHeader.split(' ')[1];
 
+        logger.info(`Access token found with length: ${token.length}`);
+
         try {
+            logger.info(`Validating token against remote resource`);
+
             const response: TokenData = await validateToken(
                 appConfig.authApiUrl,
                 token
@@ -46,8 +50,8 @@ export const registerMiddlewares = (app: Express) => {
 
             return next();
         } catch (error) {
-            logger.error(`Token verification failed ${error}`);
-            return res.status(401).send('Unauthorized');
+            logger.error(`Token verification failed ${JSON.stringify(error)}`);
+            return res.status(401).send({error: 'Unauthorized'});
         }
     });
 }

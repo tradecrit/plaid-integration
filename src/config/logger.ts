@@ -1,4 +1,5 @@
 import {createLogger, format, Logger, transports} from 'winston';
+import {appConfig} from "./load";
 
 class AppLogger {
     private static instance: Logger;
@@ -10,7 +11,7 @@ class AppLogger {
     static getInstance(): Logger {
         if (!AppLogger.instance) {
             AppLogger.instance = createLogger({
-                level: 'debug',
+                level: appConfig.logLevel,
                 format: format.json(),
                 defaultMeta: { service: 'plaid-integration' },
                 transports: [
