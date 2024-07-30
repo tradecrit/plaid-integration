@@ -5,6 +5,8 @@ import {TokenData, validateToken} from "../clients/authService";
 import {appConfig} from "../config/load";
 
 export const registerMiddlewares = (app: Express) => {
+    app.use(bodyParser.json());
+
     // logger middleware
     app.use((req: Request, res: Response, next: NextFunction) =>{
         const userAgent: string = req.headers['user-agent'] || '';
@@ -17,8 +19,6 @@ export const registerMiddlewares = (app: Express) => {
 
         next();
     });
-
-    app.use(bodyParser.json());
 
     // token verification middleware
     app.use(async (req: Request, res: Response, next: NextFunction) => {

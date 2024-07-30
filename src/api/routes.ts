@@ -82,6 +82,8 @@ export const registerRoutes = (app: Express) => {
 
         const responseBody: PlaidPublicTokenExchangeResponse = await response.json();
 
+        logger.info(`Access token created for user`);
+
         res.status(200).send(responseBody);
     });
 }
