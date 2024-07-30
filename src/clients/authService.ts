@@ -1,7 +1,7 @@
-import JwksRsa, {JwksClient} from "jwks-rsa";
+import {JwksClient} from "jwks-rsa";
 import {decode, Jwt} from "jsonwebtoken";
-import {promisify} from "node:util";
 import * as jwt from 'jsonwebtoken';
+import * as jwksRsa from 'jwks-rsa';
 
 export interface TokenData {
     "aud": string
@@ -16,19 +16,7 @@ export interface TokenData {
     "sub": string
 }
 
-export interface RealmAccess {
-    roles: string[]
-}
-
-export interface ResourceAccess {
-    account: Account
-}
-
-export interface Account {
-    roles: string[]
-}
-
-function findSigningKey(keys: JwksRsa.SigningKey[], decodedToken: Jwt): JwksRsa.SigningKey {
+function findSigningKey(keys: jwksRsa.SigningKey[], decodedToken: Jwt): jwksRsa.SigningKey {
     const key = keys.find((key) => key.kid === decodedToken.header.kid);
 
     if (!key) {
@@ -48,7 +36,7 @@ export async function validateToken(
         jwksUri: jwksUrl,
     });
 
-    const signingKeys: JwksRsa.SigningKey[] = await jwksClient.getSigningKeys();
+    const signingKeys: jwksRsa.SigningKey[] = await jwksClient.getSigningKeys();
 
     const decodedToken: Jwt | null = decode(token, {complete: true});
 
@@ -56,7 +44,7 @@ export async function validateToken(
         throw new Error('Invalid token');
     }
 
-    const signingKey: JwksRsa.SigningKey = findSigningKey(signingKeys, decodedToken);
+    const signingKey: jwksRsa.SigningKey = findSigningKey(signingKeys, decodedToken);
     const publicKey: string = signingKey.getPublicKey();
 
     const result = jwt.verify(token, publicKey, {
