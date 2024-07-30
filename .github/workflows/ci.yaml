@@ -49,14 +49,14 @@ jobs:
             type=sha,format=long
             type=raw,value=${{ steps.packageversion.outputs.VERSION }}
 
-#      - name: Build and push Docker image
-#        id: push
-#        uses: docker/build-push-action@v5
-#        with:
-#          context: .
-#          push: true
-#          tags: ${{ steps.meta.outputs.tags }}
-#          labels: ${{ steps.meta.outputs.labels }}
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
       - name: Trigger CD workflow
         run: |
