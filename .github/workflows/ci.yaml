@@ -49,14 +49,14 @@ jobs:
             type=sha,format=long
             type=raw,value=${{ steps.packageversion.outputs.VERSION }}
 
-      - name: Build and push Docker image
-        id: push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+#      - name: Build and push Docker image
+#        id: push
+#        uses: docker/build-push-action@v5
+#        with:
+#          context: .
+#          push: true
+#          tags: ${{ steps.meta.outputs.tags }}
+#          labels: ${{ steps.meta.outputs.labels }}
 
       - name: Trigger CD workflow
         run: |
@@ -65,11 +65,15 @@ jobs:
           echo "Repository: ${{ github.repository }}"
           echo "Tags: ${{ steps.packageversion.outputs.VERSION }}"
           
+          export FULL_URL="https://api.github.com/repos/${{ github.repository }}/actions/workflows/cd.yaml/dispatches"
+          
+          echo "Full URL: $FULL_URL"
+          
           curl -X POST \
             -H "Authorization: Bearer ${{ secrets.ACTIONS_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/${{ github.repository }}/actions/workflows/cd.yaml/dispatches \
+            $FULL_URL \
             -d '{
             "ref":"main",
             "inputs": {
@@ -78,3 +82,10 @@ jobs:
               "image_tag": "${{ steps.packageversion.outputs.VERSION }}"
               }
             }'
+
+            if [ $? -eq 0 ]; then
+              echo "CD workflow triggered successfully"
+            else
+              echo "Failed to trigger CD workflow"
+              exit 1
+            fi
