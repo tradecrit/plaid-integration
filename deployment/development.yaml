@@ -9,7 +9,7 @@ httpRoute:
     - "plaid-integration"
   parentRefs:
     - name: "api-gateway"
-      sectionName: "tls"
+      sectionName: "https"
       namespace: "istio-gateway"
   pathPrefix: "/plaid"
   replacePrefixMatch: "/"
